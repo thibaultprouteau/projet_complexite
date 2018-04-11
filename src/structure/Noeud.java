@@ -32,6 +32,9 @@ public class Noeud {
 		this.poids = poids;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return id + " " + poids;
+	}
 
 }
