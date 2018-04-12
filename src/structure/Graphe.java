@@ -294,7 +294,7 @@ public class Graphe {
 		return res;
 	}
 	
-	public void n(PartitionedGraph p) {
+	public void voisins(PartitionedGraph p) {
 		ArrayList<ArrayList<Integer>> partitions = p.getSousGraphes();
 		ArrayList<ArrayList<ArrayList<Integer>>> res = new ArrayList<>();
 		for (int i = 0; i < partitions.size(); i++) { // pour chaque partition
@@ -418,8 +418,53 @@ public class Graphe {
 		return somme;
 		
 	}
+
+	public int valueArc(int n1, int n2) {
+		int value = 0;
+
+
+		if(n1 > n2){
+			if (matriceAdj[n1][n2] > 0 )
+				value = matriceAdj[n1][n2];
+			
+		}
+		else{
+			if(matriceAdj[n2][n1] > 0)
+				value = matriceAdj[n2][n1];
+		}
+		return value;
+	}
 	
+	public float ratioCut(PartitionedGraph p1){
+		
+		float ratio = 0;
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		ArrayList<Integer> noeudsPapa =  new ArrayList<Integer>();
+		int value = 0;
+		
+		for(int k = 0; k < this.Noeuds.size(); k++){
+			noeudsPapa.add(this.Noeuds.get(k).getId());
+		}
+		
+		for (int i = 1; i < p1.getSousGraphes().size() + 1; i++) {
+			temp = neighboorsOf(p1.getSousGraphes().get(i));
+			
+			for(int j = 0; j < noeudsPapa.size(); j++){
+				for(int h = 0; h < temp.size(); h++){ 
+				value = value + valueArc(noeudsPapa.get(j), temp.get(h));
+				}
+				
+			}
+			ratio = ratio + (value / sumPoidsSousGraphe(p1, i));
+		}
+
+		return ratio;
+	}
+	
+
+
 	public static int sumPoidsGraphe(Graphe g) {
+
 		int weight = 0;
 		
 		for(int i = 0; i < g.getNoeuds().size(); i++) {
@@ -464,6 +509,56 @@ public class Graphe {
 	}
 	
 	
+	
+	public static PartitionedGraph tabou (Graphe g, PartitionedGraph pt){
+		
+		
+		ArrayList<Double> doubleList = new ArrayList<>();
+		
+		PartitionedGraph tempGraph = pt;
+		Double scoreABattre = pt.fitness;
+		
+		int n = 0;
+		
+		while(fitness != 1 || n<10){
+			
+			ArrayList<PartitionedGraph> partionList = voisins(pt);  // recupere l'ensemble des partitions a 1 de différence
+			
+			
+			for(PartitionedGraph p: partionList){
+				doubleList.add(p.fitness);   // ajoute le score de la partition à la liste des scores
+			}
+		
+			double temp = doubleList.get(0);
+		
+			for(int i = 1; i < doubleList.size(); i++ ){
+				
+				if(temp >= doubleList.get(i)){
+				
+					temp = doubleList.get(i);   // recupere le meilleur score
+					tempGraph = partionList.get(i); // recupere la partition graph correspondant
+				
+				}
+			}
+			
+			if(temp < scoreABattre){
+				pt = tempGraph; // change la partition de graphe par la meilleure trouvé
+				scoreABattre = temp; // change la valeur du meilleur score !
+			}
+
+			n++;
+			
+			
+		}
+		
+		
+		return pt;
+	}
+	
+	
+	
+	
+
 	
 	
 }
