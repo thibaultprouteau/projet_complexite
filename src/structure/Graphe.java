@@ -439,23 +439,24 @@ public class Graphe {
 		return weight;
 	}
 	
-	public int balance(PartitionedGraph pg) {
-		int bal = 0;
-		int max = 0;
-		int pdbig = 0;
-		int nb = 0;
+	public double balance(PartitionedGraph pg) {
+		float bal = 0;
+		float max = 0;
+		float pdbig = 0;
+		float nb = pg.getSousGraphes().size();
+		
 		for(int i = 0; i < pg.getSousGraphes().size(); i++) {
-			int pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
-			System.out.println("pd i : "+pdi);
+			
+			float pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
+			//System.out.println("pd i : "+pdi);
 			if(pdi > max) {
 				max = pdi;
 			}
 			
-			pdbig = pdbig + pdi;
-			nb = nb + pg.getSousGraphes().get(i).size();
+			pdbig = pdbig + pdi;//poids du gros graphe
 		}
-		System.out.println("pd big : "+pdbig);
-		int denom = pdbig/nb;
+		//System.out.println("pd big : "+pdbig);
+		float denom = pdbig/nb;
 		
 		bal = max/denom;
 		
