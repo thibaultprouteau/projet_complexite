@@ -418,8 +418,7 @@ public class Graphe {
 		return somme;
 		
 	}
-	
-<<<<<<< HEAD
+
 	public int valueArc(int n1, int n2) {
 		int value = 0;
 
@@ -456,16 +455,16 @@ public class Graphe {
 				}
 				
 			}
-			ratio = ratio + (value / getPoids(temp));
+			ratio = ratio + (value / sumPoidsSousGraphe(p1, i));
 		}
 
 		return ratio;
 	}
 	
-	public static int sumPoids(Graphe g) {
-=======
+
+
 	public static int sumPoidsGraphe(Graphe g) {
->>>>>>> 34dd97bad8efcd6d121b7a5f9ff8edcba17086fe
+
 		int weight = 0;
 		
 		for(int i = 0; i < g.getNoeuds().size(); i++) {
@@ -506,6 +505,53 @@ public class Graphe {
 		bal = max/denom;
 		
 		return bal;
+	}
+	
+	
+	
+	public static PartitionedGraph tabou (Graphe g, PartitionedGraph pt){
+		
+		
+		ArrayList<Double> doubleList = new ArrayList<>();
+		
+		PartitionedGraph tempGraph = pt;
+		Double scoreABattre = pt.fitness;
+		
+		int n = 0;
+		
+		while(fitness != 1 || n<10){
+			
+			ArrayList<PartitionedGraph> partionList = voisins(pt);  // recupere l'ensemble des partitions a 1 de différence
+			
+			
+			for(PartitionedGraph p: partionList){
+				doubleList.add(p.fitness);   // ajoute le score de la partition à la liste des scores
+			}
+		
+			double temp = doubleList.get(0);
+		
+			for(int i = 1; i < doubleList.size(); i++ ){
+				
+				if(temp >= doubleList.get(i)){
+				
+					temp = doubleList.get(i);   // recupere le meilleur score
+					tempGraph = partionList.get(i); // recupere la partition graph correspondant
+				
+				}
+			}
+			
+			if(temp < scoreABattre){
+				pt = tempGraph; // change la partition de graphe par la meilleure trouvé
+				scoreABattre = temp; // change la valeur du meilleur score !
+			}
+
+			n++;
+			
+			
+		}
+		
+		
+		return pt;
 	}
 	
 	
