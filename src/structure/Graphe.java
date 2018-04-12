@@ -13,6 +13,22 @@ public class Graphe {
 	protected ArrayList<Noeud> Noeuds = new ArrayList();
 	protected int[][] matriceAdj;
 	
+	public ArrayList<Noeud> getNoeuds() {
+		return Noeuds;
+	}
+
+	public void setNoeuds(ArrayList<Noeud> noeuds) {
+		Noeuds = noeuds;
+	}
+
+	public int[][] getMatriceAdj() {
+		return matriceAdj;
+	}
+
+	public void setMatriceAdj(int[][] matriceAdj) {
+		this.matriceAdj = matriceAdj;
+	}
+
 	//Ajouter un noeud à la liste de noeuds
 	public void ajoutNoeud(Noeud n) {
 		Noeuds.add(n);
@@ -382,4 +398,60 @@ public class Graphe {
 		res+="\n";
 		return res;
 	}
+	
+	public int cut(Graphe v1, Graphe v2){
+		
+		int somme = 0;
+		
+		for(int i = 0; i < v1.Noeuds.size(); i++){
+			for (int j = 0; j < v2.Noeuds.size(); j++) {
+				
+				if((hasArc(v1.Noeuds.get(i), v2.Noeuds.get(j))) == true){
+					somme = somme + matriceAdj[v1.Noeuds.get(i).getId()][v2.Noeuds.get(j).getId()];
+				}
+				
+			}
+			
+		}
+		
+		return somme;
+		
+	}
+	
+	public static int sumPoids(Graphe g) {
+		int weight = 0;
+		
+		for(int i = 0; i < g.getNoeuds().size(); i++) {
+			weight = ((Noeud) g.getNoeuds().get(i)).getPoids();
+		}
+		
+		return weight;
+	}
+	
+	public static int balance(PartitionedGraph pg) {
+		int bal = 0;
+		int max = 0;
+		int pdbig = 0;
+		int nb = 0;
+		for(int i = 0; i < pg.getSousGraphes().size(); i++) {
+			int pdi = sumPoids(pg.getSousGraphes().get(i)); //poids du sous graphe i
+			
+			if(pdi > max) {
+				max = pdi;
+			}
+			
+			pdbig = pdbig + pdi;
+			nb = nb + pg.getSousGraphes().get(i).nombreSommets();
+		}
+		
+		int denom = pdbig/nb;
+		
+		bal = max/denom;
+		
+		return bal;
+	}
+	
+	
+	
+	
 }

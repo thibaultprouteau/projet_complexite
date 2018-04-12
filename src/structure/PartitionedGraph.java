@@ -3,6 +3,7 @@ package structure;
 import java.util.ArrayList;
 
 public class PartitionedGraph extends Graphe {
+
 	private ArrayList<ArrayList<Integer>> sousGraphes = new ArrayList<>();
 	private ArrayList<Coupure> coupures = new ArrayList<>();
 	private PartitionedGraph(Graphe g) {
@@ -42,7 +43,6 @@ public class PartitionedGraph extends Graphe {
 	
 	private void findPartitions() {
 		ArrayList<Integer> total = new ArrayList<>();
-		
 		ArrayList<Integer> currentPartition;
 		while(total.size() != Noeuds.size()) {
 			currentPartition= new ArrayList<>();
@@ -85,4 +85,5 @@ public class PartitionedGraph extends Graphe {
 		res+="]\n";
 		return res;
 	}
+	
 }
