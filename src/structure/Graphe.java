@@ -274,4 +274,27 @@ public class Graphe {
 		res+="\n";
 		return res;
 	}
+	
+	public int cut(Graphe v1, Graphe v2){
+		
+		int somme = 0;
+		
+		for(int i = 0; i < v1.Noeuds.size(); i++){
+			for (int j = 0; j < v2.Noeuds.size(); j++) {
+				
+				if((hasArc(v1.Noeuds.get(i), v2.Noeuds.get(j))) == true){
+					somme = somme + matriceAdj[v1.Noeuds.get(i).getId()][v2.Noeuds.get(j).getId()];
+				}
+				
+			}
+			
+		}
+		
+		return somme;
+		
+	}
+	
+	
+	
+	
 }
