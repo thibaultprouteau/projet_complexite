@@ -294,7 +294,7 @@ public class Graphe {
 		return res;
 	}
 	
-	public void voisins(PartitionedGraph p) {
+	public ArrayList<PartitionedGraph> voisins(PartitionedGraph p) {
 		ArrayList<ArrayList<Integer>> partitions = p.getSousGraphes();
 		ArrayList<ArrayList<ArrayList<Integer>>> res = new ArrayList<>();
 		for (int i = 0; i < partitions.size(); i++) { // pour chaque partition
@@ -316,7 +316,7 @@ public class Graphe {
 							
 							if (canBeAPart(c))  b.add(c);
 							else {
-								System.out.println("~"+c);
+								//System.out.println("~"+c);
 								boo = false;
 							}
 						}
@@ -344,7 +344,7 @@ public class Graphe {
 						
 						if (canBeAPart(c))  b.add(c);
 						else {
-							System.out.println("~"+c);
+							//System.out.println("~"+c);
 							boo = false;
 						}
 					}
@@ -359,8 +359,10 @@ public class Graphe {
 		for (ArrayList<ArrayList<Integer>> arrayList : res) {
 			parts.add(PartitionedGraph.PartitionnedGraphFromPartitions(this, arrayList));
 		}
-		System.out.println(res);
-		System.out.println(parts);
+		//System.out.println(res);
+		//System.out.println(parts);
+		
+		return parts;
 	}
 	
 	public boolean canBeAPart(ArrayList<Integer> part) {
@@ -423,6 +425,61 @@ public class Graphe {
 		System.out.println(p);
 		System.out.println("Balance de p = " + g.balance(p));
 		//g.n(p);
+		
+		
+		//-------------------------------------------------------------------------------------------------------------------
+		
+		ArrayList<Graphe> listeGraphes = new ArrayList<>();
+		ArrayList<PartitionedGraph> listePartitionGraphes = new ArrayList<>();
+		
+		Chrono chrono = new Chrono();
+	
+		chrono.start();
+		
+		for (int i = 10; i <= 50; i+=5) {
+			for (int j = 0; j < 9; j++) {
+				Graphe graphe = generateGraph(i, 5);
+				
+				listeGraphes.add(graphe);
+				listePartitionGraphes.add(graphe.randomPartition());
+				
+			}
+			
+			
+		}
+		chrono.stop();
+		//System.out.println(chrono.getDureeNs());
+
+		ArrayList<Long> listeChrono = new ArrayList<>();
+		
+		
+		for (int i = 0; i < listeGraphes.size(); i++) {
+			chrono.start();
+			listeGraphes.get(i).tabou( listePartitionGraphes.get(i));
+			chrono.stop();
+			
+			listeChrono.add(chrono.getDureeNs());			
+		}
+		
+		Long res;
+		int count = 5;
+		Long temp1 = listeChrono.get(0);
+		for (int i = 1; i < listeChrono.size(); i++) {
+			System.out.println(listeChrono.get(i));
+			temp1 = temp1 + listeChrono.get(i);
+			if(i%10==0){
+				res = temp1 / 10;
+				count = count + 5;
+				System.out.println("Temps moyen pour un graphe de "+ count +": " +res);
+				temp1 = (long) 0;
+			}
+			
+		}
+
+		System.out.println("Temps moyen: " + temp1/listeChrono.size());
+		
+		
+		
 	}
 	
 	@Override
@@ -547,23 +604,24 @@ public class Graphe {
 	
 	
 	
-	public static PartitionedGraph tabou (Graphe g, PartitionedGraph pt){
+	public PartitionedGraph tabou (PartitionedGraph pt){
 		
 		
 		ArrayList<Double> doubleList = new ArrayList<>();
 		
 		PartitionedGraph tempGraph = pt;
-		Double scoreABattre = pt.fitness;
+		Double scoreABattre = Math.random();
 		
 		int n = 0;
 		
-		while(fitness != 1 || n<10){
+		while(n<10){
+			//System.out.println(pt);
 			
 			ArrayList<PartitionedGraph> partionList = voisins(pt);  // recupere l'ensemble des partitions a 1 de différence
 			
 			
 			for(PartitionedGraph p: partionList){
-				doubleList.add(p.fitness);   // ajoute le score de la partition à la liste des scores
+				doubleList.add(Math.random());   // ajoute le score de la partition à la liste des scores
 			}
 		
 			double temp = doubleList.get(0);
@@ -582,7 +640,7 @@ public class Graphe {
 				pt = tempGraph; // change la partition de graphe par la meilleure trouvé
 				scoreABattre = temp; // change la valeur du meilleur score !
 			}
-
+			doubleList.clear();
 			n++;
 			
 			
