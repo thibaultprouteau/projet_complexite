@@ -3,6 +3,9 @@ package structure;
 
 import java.lang.reflect.Array;
 import java.util.AbstractMap.SimpleEntry;
+
+import graph.PartitionedGraph;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -419,7 +422,7 @@ public class Graphe {
 		
 	}
 	
-<<<<<<< HEAD
+
 	public int valueArc(int n1, int n2) {
 		int value = 0;
 
@@ -456,16 +459,31 @@ public class Graphe {
 				}
 				
 			}
-			ratio = ratio + (value / getPoids(temp));
+			ratio = ratio + (value / sumPoidsSousGraphe(p1, i));
 		}
 
 		return ratio;
 	}
 	
-	public static int sumPoids(Graphe g) {
-=======
+	public static PartitionedGraph bebe(PartitionedGraph maman, PartitionedGraph papa){
+		
+		int [][] matriceBebe = new int [maman.matriceAdj.length][maman.matriceAdj.length];
+		double prob = 0;
+		
+		for(int i = 0; i < maman.matriceAdj.length; i++){
+			for(int j = 0; j < i; j++){
+				prob = ((((maman.matriceAdj[i][j] == -1)? 0:1) + ((papa.matriceAdj[i][j] == -1)? 0:1))) / 2;
+				matriceBebe[i][j] = (prob < Math.random()? maman.matriceAdj[i][j]:-1 );
+			}
+		}
+		
+		
+		return bebe;
+		
+	}
+
 	public static int sumPoidsGraphe(Graphe g) {
->>>>>>> 34dd97bad8efcd6d121b7a5f9ff8edcba17086fe
+
 		int weight = 0;
 		
 		for(int i = 0; i < g.getNoeuds().size(); i++) {
