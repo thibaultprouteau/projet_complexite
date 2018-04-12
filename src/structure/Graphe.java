@@ -418,6 +418,48 @@ public class Graphe {
 		
 	}
 	
+	public int valueArc(int n1, int n2) {
+		int value = 0;
+
+
+		if(n1 > n2){
+			if (matriceAdj[n1][n2] > 0 )
+				value = matriceAdj[n1][n2];
+			
+		}
+		else{
+			if(matriceAdj[n2][n1] > 0)
+				value = matriceAdj[n2][n1];
+		}
+		return value;
+	}
+	
+	public float ratioCut(PartitionedGraph p1){
+		
+		float ratio = 0;
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		ArrayList<Integer> noeudsPapa =  new ArrayList<Integer>();
+		int value = 0;
+		
+		for(int k = 0; k < this.Noeuds.size(); k++){
+			noeudsPapa.add(this.Noeuds.get(k).getId());
+		}
+		
+		for (int i = 1; i < p1.getSousGraphes().size() + 1; i++) {
+			temp = neighboorsOf(p1.getSousGraphes().get(i));
+			
+			for(int j = 0; j < noeudsPapa.size(); j++){
+				for(int h = 0; h < temp.size(); h++){ 
+				value = value + valueArc(noeudsPapa.get(j), temp.get(h));
+				}
+				
+			}
+			ratio = ratio + (value / getPoids(temp));
+		}
+
+		return ratio;
+	}
+	
 	public static int sumPoids(Graphe g) {
 		int weight = 0;
 		
