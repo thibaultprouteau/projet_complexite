@@ -40,9 +40,9 @@ public class PartitionedGraph extends Graphe {
 						pg.matriceAdj[j][i] = -1;
 						pg.coupures.add(new Coupure(i, j));
 					}
-					
 				}
 			}
+			toCut.clear();
 		}
 		pg.findPartitions();
 		return pg;

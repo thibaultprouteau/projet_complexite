@@ -297,45 +297,82 @@ public class Graphe {
 		return res;
 	}
 	
-	public void n(PartitionedGraph p) {
+	public void voisins(PartitionedGraph p) {
 		ArrayList<ArrayList<Integer>> partitions = p.getSousGraphes();
 		ArrayList<ArrayList<ArrayList<Integer>>> res = new ArrayList<>();
 		for (int i = 0; i < partitions.size(); i++) { // pour chaque partition
 			ArrayList<Integer> a = partitions.get(i);  //  a = une partition
 			for (int j = 0; j < a.size(); j++) { // pour chaque noeud de a
 				int n = a.get(j); // n = un noeud de a
+				
 				for (int k = 0; k < partitions.size(); k++) { // la partition qui gagne un noeud
-					if (k != i) {
 					ArrayList<ArrayList<Integer>> b = new ArrayList<>();
-					for (int l = 0; l < partitions.size(); l++) {						
-						ArrayList<Integer> c = new ArrayList<>(partitions.get(l));
+					boolean boo = true;
+					if (k != i) {
+					
+						for (int l = 0; l < partitions.size(); l++) {						
+							ArrayList<Integer> c = new ArrayList<>(partitions.get(l));
+							if (l == i) c.remove((Integer) n);
+							else if (l == k) {
+								c.add((Integer) n);
+							}
+							
+							if (canBeAPart(c))  b.add(c);
+							else {
+								System.out.println("~"+c);
+								boo = false;
+							}
+						}
+						
+						if (boo)res.add(b);
+						
+					}
+					
+					//if (boo)res.add(b);
+				}
+				boolean boo = true;
+				ArrayList<ArrayList<Integer>> b = new ArrayList<>();
+				
+					for (int l = 0; l < partitions.size()+1; l++) {						
+						ArrayList<Integer> c;
+						try {
+							c = new ArrayList<>(partitions.get(l));
+						} catch (Exception e) {
+							c = new ArrayList<>();
+						}
 						if (l == i) c.remove((Integer) n);
-						else if (l == k) {
+						else if (l == partitions.size()) {
 							c.add((Integer) n);
 						}
 						
-						if (canBeAPart(c)) b.add(c);
-						System.out.println("-"+c);
+						if (canBeAPart(c))  b.add(c);
+						else {
+							System.out.println("~"+c);
+							boo = false;
+						}
 					}
-					ArrayList<Integer> c = new ArrayList<>();
-					c.add((Integer)n);
-					if (canBeAPart(c)) b.add(c);
-					System.out.println("-"+c);
-					res.add(b);
-					}
-				}
+					
+					if (boo)res.add(b);
+					
+				
+				
 			}
 		}
+		ArrayList<PartitionedGraph> parts = new ArrayList<>();
+		for (ArrayList<ArrayList<Integer>> arrayList : res) {
+			parts.add(PartitionedGraph.PartitionnedGraphFromPartitions(this, arrayList));
+		}
 		System.out.println(res);
+		System.out.println(parts);
 	}
 	
 	public boolean canBeAPart(ArrayList<Integer> part) {
-		if (part.size() == 0) return true;
+		if (part.size() == 0) return false;
 		int n = 0;
 		ArrayList<Integer> connected = new ArrayList<>();
-		connected.add(part.remove(0));
-		boolean boo = false;
-		while (boo);
+		connected.add(part.get(0));
+		boolean boo = true;
+		while (boo) {
 			boo = false;
 			ArrayList<Integer> temp = neighboorsOf(connected);
 			for (Integer integer : temp) {
@@ -343,6 +380,7 @@ public class Graphe {
 					boo = true;
 					connected.add(integer);
 				}
+			}
 		}
 		return part.size() == connected.size();
 	}
@@ -421,7 +459,7 @@ public class Graphe {
 		return somme;
 		
 	}
-	
+
 
 	public int valueArc(int n1, int n2) {
 		int value = 0;
@@ -465,6 +503,7 @@ public class Graphe {
 		return ratio;
 	}
 	
+
 	public static PartitionedGraph bebe(PartitionedGraph maman, PartitionedGraph papa){
 		
 		int [][] matriceBebe = new int [maman.matriceAdj.length][maman.matriceAdj.length];
@@ -481,6 +520,36 @@ public class Graphe {
 		return bebe;
 		
 	}
+
+
+	public float fitness(PartitionedGraph pg, int alpha, int beta) {
+		float fit = 0;
+		float worstBalance;
+		float worstRatio;
+		
+		if(ratioCut(pg) < beta && balance(pg) < alpha) {
+			fit = 1;
+		}
+		
+		else {
+			if(ratioCut(pg) >= beta) {
+				fit = fit - (float)0.5;
+			}
+			else {
+				fit = fit + (float)0.5;
+			}
+			
+			if(balance(pg) >= alpha)
+				fit = fit - (float)0.5;
+			else {
+				fit = fit + (float)0.5;
+			}
+		}
+		
+		return 0;
+	}
+
+
 
 	public static int sumPoidsGraphe(Graphe g) {
 
@@ -503,23 +572,24 @@ public class Graphe {
 		return weight;
 	}
 	
-	public int balance(PartitionedGraph pg) {
-		int bal = 0;
-		int max = 0;
-		int pdbig = 0;
-		int nb = 0;
+	public double balance(PartitionedGraph pg) {
+		float bal = 0;
+		float max = 0;
+		float pdbig = 0;
+		float nb = pg.getSousGraphes().size();
+		
 		for(int i = 0; i < pg.getSousGraphes().size(); i++) {
-			int pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
-			System.out.println("pd i : "+pdi);
+			
+			float pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
+			//System.out.println("pd i : "+pdi);
 			if(pdi > max) {
 				max = pdi;
 			}
 			
-			pdbig = pdbig + pdi;
-			nb = nb + pg.getSousGraphes().get(i).size();
+			pdbig = pdbig + pdi;//poids du gros graphe
 		}
-		System.out.println("pd big : "+pdbig);
-		int denom = pdbig/nb;
+		//System.out.println("pd big : "+pdbig);
+		float denom = pdbig/nb;
 		
 		bal = max/denom;
 		
@@ -527,6 +597,56 @@ public class Graphe {
 	}
 	
 	
+	
+//	public static PartitionedGraph tabou (Graphe g, PartitionedGraph pt){
+//		
+//		
+//		ArrayList<Double> doubleList = new ArrayList<>();
+//		
+//		PartitionedGraph tempGraph = pt;
+//		Double scoreABattre = pt.fitness;
+//		
+//		int n = 0;
+//		
+//		while(fitness != 1 || n<10){
+//			
+//			ArrayList<PartitionedGraph> partionList = voisins(pt);  // recupere l'ensemble des partitions a 1 de diff�rence
+//			
+//			
+//			for(PartitionedGraph p: partionList){
+//				doubleList.add(p.fitness);   // ajoute le score de la partition � la liste des scores
+//			}
+//		
+//			double temp = doubleList.get(0);
+//		
+//			for(int i = 1; i < doubleList.size(); i++ ){
+//				
+//				if(temp >= doubleList.get(i)){
+//				
+//					temp = doubleList.get(i);   // recupere le meilleur score
+//					tempGraph = partionList.get(i); // recupere la partition graph correspondant
+//				
+//				}
+//			}
+//			
+//			if(temp < scoreABattre){
+//				pt = tempGraph; // change la partition de graphe par la meilleure trouv�
+//				scoreABattre = temp; // change la valeur du meilleur score !
+//			}
+//
+//			n++;
+//			
+//			
+//		}
+//		
+//		
+//		return pt;
+//	}
+//	
+//	
+//	
+//	
+
 	
 	
 }
