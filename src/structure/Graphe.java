@@ -301,38 +301,75 @@ public class Graphe {
 			ArrayList<Integer> a = partitions.get(i);  //  a = une partition
 			for (int j = 0; j < a.size(); j++) { // pour chaque noeud de a
 				int n = a.get(j); // n = un noeud de a
+				
 				for (int k = 0; k < partitions.size(); k++) { // la partition qui gagne un noeud
-					if (k != i) {
 					ArrayList<ArrayList<Integer>> b = new ArrayList<>();
-					for (int l = 0; l < partitions.size(); l++) {						
-						ArrayList<Integer> c = new ArrayList<>(partitions.get(l));
+					boolean boo = true;
+					if (k != i) {
+					
+						for (int l = 0; l < partitions.size(); l++) {						
+							ArrayList<Integer> c = new ArrayList<>(partitions.get(l));
+							if (l == i) c.remove((Integer) n);
+							else if (l == k) {
+								c.add((Integer) n);
+							}
+							
+							if (canBeAPart(c))  b.add(c);
+							else {
+								System.out.println("~"+c);
+								boo = false;
+							}
+						}
+						
+						if (boo)res.add(b);
+						
+					}
+					
+					//if (boo)res.add(b);
+				}
+				boolean boo = true;
+				ArrayList<ArrayList<Integer>> b = new ArrayList<>();
+				
+					for (int l = 0; l < partitions.size()+1; l++) {						
+						ArrayList<Integer> c;
+						try {
+							c = new ArrayList<>(partitions.get(l));
+						} catch (Exception e) {
+							c = new ArrayList<>();
+						}
 						if (l == i) c.remove((Integer) n);
-						else if (l == k) {
+						else if (l == partitions.size()) {
 							c.add((Integer) n);
 						}
 						
-						if (canBeAPart(c)) b.add(c);
-						System.out.println("-"+c);
+						if (canBeAPart(c))  b.add(c);
+						else {
+							System.out.println("~"+c);
+							boo = false;
+						}
 					}
-					ArrayList<Integer> c = new ArrayList<>();
-					c.add((Integer)n);
-					if (canBeAPart(c)) b.add(c);
-					System.out.println("-"+c);
-					res.add(b);
-					}
-				}
+					
+					if (boo)res.add(b);
+					
+				
+				
 			}
 		}
+		ArrayList<PartitionedGraph> parts = new ArrayList<>();
+		for (ArrayList<ArrayList<Integer>> arrayList : res) {
+			parts.add(PartitionedGraph.PartitionnedGraphFromPartitions(this, arrayList));
+		}
 		System.out.println(res);
+		System.out.println(parts);
 	}
 	
 	public boolean canBeAPart(ArrayList<Integer> part) {
-		if (part.size() == 0) return true;
+		if (part.size() == 0) return false;
 		int n = 0;
 		ArrayList<Integer> connected = new ArrayList<>();
-		connected.add(part.remove(0));
-		boolean boo = false;
-		while (boo);
+		connected.add(part.get(0));
+		boolean boo = true;
+		while (boo) {
 			boo = false;
 			ArrayList<Integer> temp = neighboorsOf(connected);
 			for (Integer integer : temp) {
@@ -340,6 +377,7 @@ public class Graphe {
 					boo = true;
 					connected.add(integer);
 				}
+			}
 		}
 		return part.size() == connected.size();
 	}
