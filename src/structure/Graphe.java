@@ -3,6 +3,9 @@ package structure;
 
 import java.lang.reflect.Array;
 import java.util.AbstractMap.SimpleEntry;
+
+import graph.PartitionedGraph;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -514,6 +517,7 @@ public class Graphe {
 		
 	}
 
+
 	public int valueArc(int n1, int n2) {
 		int value = 0;
 
@@ -557,6 +561,31 @@ public class Graphe {
 	}
 	
 
+	public static PartitionedGraph bebe(PartitionedGraph maman, PartitionedGraph papa){
+		
+		int [][] matriceBebe = new int [maman.matriceAdj.length][maman.matriceAdj.length];
+		double prob = 0;
+		
+		for(int i = 0; i < maman.matriceAdj.length; i++){
+			for(int j = 0; j < i; j++){
+				prob = ((((maman.matriceAdj[i][j] == -1)? 0:1) + ((papa.matriceAdj[i][j] == -1)? 0:1))) / 2;
+				matriceBebe[i][j] = (prob < Math.random()? maman.matriceAdj[i][j]:-1 );
+			}
+		}
+		
+		
+		return bebe;
+		
+	}
+
+//Fitness as mean of absolute difference of Balance to 1 and ratioCut
+	public float fitness(PartitionedGraph pg, int alpha, int beta) {
+		float absBalance = (float) Math.abs(1-pg.balance(pg));
+		float absRatio = Math.abs(pg.ratioCut(pg));
+		return (absBalance+absRatio)/2;
+	}
+
+
 
 	public static int sumPoidsGraphe(Graphe g) {
 
@@ -579,23 +608,24 @@ public class Graphe {
 		return weight;
 	}
 	
-	public int balance(PartitionedGraph pg) {
-		int bal = 0;
-		int max = 0;
-		int pdbig = 0;
-		int nb = 0;
+	public double balance(PartitionedGraph pg) {
+		float bal = 0;
+		float max = 0;
+		float pdbig = 0;
+		float nb = pg.getSousGraphes().size();
+		
 		for(int i = 0; i < pg.getSousGraphes().size(); i++) {
-			int pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
-			System.out.println("pd i : "+pdi);
+			
+			float pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
+			//System.out.println("pd i : "+pdi);
 			if(pdi > max) {
 				max = pdi;
 			}
 			
-			pdbig = pdbig + pdi;
-			nb = nb + pg.getSousGraphes().get(i).size();
+			pdbig = pdbig + pdi;//poids du gros graphe
 		}
-		System.out.println("pd big : "+pdbig);
-		int denom = pdbig/nb;
+		//System.out.println("pd big : "+pdbig);
+		float denom = pdbig/nb;
 		
 		bal = max/denom;
 		
@@ -603,7 +633,7 @@ public class Graphe {
 	}
 	
 	
-	
+
 	public PartitionedGraph tabou (PartitionedGraph pt){
 		
 		
@@ -649,9 +679,6 @@ public class Graphe {
 		
 		return pt;
 	}
-	
-	
-	
 	
 
 	
