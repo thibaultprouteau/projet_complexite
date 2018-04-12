@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class Graphe {
 	
-	private ArrayList<Noeud> Noeuds = new ArrayList();
+	protected ArrayList<Noeud> Noeuds = new ArrayList();
 	protected int[][] matriceAdj;
 	
 	//Ajouter un noeud Ã  la liste de noeuds
@@ -175,6 +175,7 @@ public class Graphe {
 	}
 	
 	/**
+	 * O(n)
 	 * Trouve les voisins d'un ensemble de noeud
 	 * @param l la liste des id des noeuds dont on veut les voisins
 	 * @return la liste des voisins des noeuds, si l est vide, renvoie la l'ensemble des noeuds.
@@ -197,10 +198,14 @@ public class Graphe {
 	}
 	
 	
+	
+	
 	/**
+	 * O(2^n) <-- pas top top
 	 * Trouve toutes les coupes du graphes donnant une ou deux partitions (une partition = graphe de départ)
 	 * @return une les de PartitionnedGraph
 	 */
+	/*
 	public ArrayList<PartitionedGraph> partitionGraph() {
 		ArrayList<ArrayList<Integer>> partitions = new ArrayList<>();
 		//HashMap<ArrayList<Integer>, PartitionedGraph> t = new HashMap<>();
@@ -241,26 +246,129 @@ public class Graphe {
 		}while(buffer.size() != 0);
 		return res;
 	}
+	*/
 	
-	/*
+	public PartitionedGraph randomPartition() {
+		ArrayList<Integer> partition = new ArrayList<>();
+		for (int i = 0; ((double)i / (Noeuds.size()) ) <= Math.random(); i++) {
+			ArrayList<Integer> temp =neighboorsOf(partition);
+			partition.add(temp.get((int)(Math.random()*temp.size())));
+		}
+		ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+		res.add(partition);
+		return PartitionedGraph.PartitionnedGraphFromPartitions(this, res);
+	}
+	
+	public ArrayList<ArrayList<Integer>> NeighbooringPartition(ArrayList<Integer> partition) {
+		ArrayList<Integer> t = neighboorsOf(partition);
+		ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+		for (Integer i : t) {
+			ArrayList<Integer> temp = new ArrayList<>(partition);
+			temp.add(i);
+			res.add(temp);
+		}
+		for (Integer i : partition) {
+			ArrayList<Integer> temp = new ArrayList<>(partition);
+			temp.remove(i);
+			res.add(temp);
+		}
+		for (ArrayList<Integer> arrayList : res) {
+			System.out.println(arrayList);
+		}
+		return res;
+	}
+	
+	public void n(PartitionedGraph p) {
+		ArrayList<ArrayList<Integer>> partitions = p.getSousGraphes();
+		ArrayList<ArrayList<ArrayList<Integer>>> res = new ArrayList<>();
+		for (int i = 0; i < partitions.size(); i++) { // pour chaque partition
+			ArrayList<Integer> a = partitions.get(i);  //  a = une partition
+			for (int j = 0; j < a.size(); j++) { // pour chaque noeud de a
+				int n = a.get(j); // n = un noeud de a
+				for (int k = 0; k < partitions.size(); k++) { // la partition qui gagne un noeud
+					if (k != i) {
+					ArrayList<ArrayList<Integer>> b = new ArrayList<>();
+					for (int l = 0; l < partitions.size(); l++) {						
+						ArrayList<Integer> c = new ArrayList<>(partitions.get(l));
+						if (l == i) c.remove((Integer) n);
+						else if (l == k) {
+							c.add((Integer) n);
+						}
+						
+						if (canBeAPart(c)) b.add(c);
+						System.out.println("-"+c);
+					}
+					ArrayList<Integer> c = new ArrayList<>();
+					c.add((Integer)n);
+					if (canBeAPart(c)) b.add(c);
+					System.out.println("-"+c);
+					res.add(b);
+					}
+				}
+			}
+		}
+		System.out.println(res);
+	}
+	
+	public boolean canBeAPart(ArrayList<Integer> part) {
+		if (part.size() == 0) return true;
+		int n = 0;
+		ArrayList<Integer> connected = new ArrayList<>();
+		connected.add(part.remove(0));
+		boolean boo = false;
+		while (boo);
+			boo = false;
+			ArrayList<Integer> temp = neighboorsOf(connected);
+			for (Integer integer : temp) {
+				if (part.contains(integer)) {
+					boo = true;
+					connected.add(integer);
+				}
+		}
+		return part.size() == connected.size();
+	}
+	
 	// pour tester partitionGraph()
 	public static void main(String[] args) {
-		Graphe g = new Graphe(5);
+		Graphe g = new Graphe(6);
 		g.matriceAdj[0][1] = 1;
 		g.matriceAdj[1][0] = 1;
 		g.matriceAdj[0][3] = 1;
 		g.matriceAdj[3][0] = 1;
+		g.matriceAdj[0][5] = 1;
+		g.matriceAdj[5][0] = 1;
 		g.matriceAdj[1][2] = 1;
 		g.matriceAdj[2][1] = 1;
 		g.matriceAdj[2][3] = 1;
 		g.matriceAdj[3][2] = 1;
 		g.matriceAdj[3][4] = 1;
 		g.matriceAdj[4][3] = 1;
-		ArrayList<PartitionedGraph> l =g.partitionGraph();
-		for (PartitionedGraph partitionedGraph : l) {
-			System.out.println(l);
-		}
-	}*/
+		Graphe h = new Graphe(5);
+		h.matriceAdj[0][1] = 1;
+		h.matriceAdj[0][2] = 1;
+		h.matriceAdj[0][3] = 1;
+		h.matriceAdj[0][4] = 1;
+		h.matriceAdj[1][2] = 1;
+		h.matriceAdj[1][3] = 1;
+		h.matriceAdj[1][4] = 1;
+		h.matriceAdj[2][3] = 1;
+		h.matriceAdj[2][4] = 1;
+		h.matriceAdj[3][4] = 1;
+		h.matriceAdj[1][0] = 1;
+		h.matriceAdj[2][0] = 1;
+		h.matriceAdj[3][0] = 1;
+		h.matriceAdj[4][0] = 1;
+		h.matriceAdj[2][1] = 1;
+		h.matriceAdj[3][1] = 1;
+		h.matriceAdj[4][1] = 1;
+		h.matriceAdj[3][2] = 1;
+		h.matriceAdj[4][2] = 1;
+		h.matriceAdj[4][3] = 1;
+		PartitionedGraph p = g.randomPartition();
+		PartitionedGraph q = PartitionedGraph.PartitionnedGraphFromPartitions(g,new ArrayList<>());
+		System.out.println(p);
+		g.n(p);
+	}
 	
 	@Override
 	public String toString() {
