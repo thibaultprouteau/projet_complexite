@@ -521,32 +521,11 @@ public class Graphe {
 		
 	}
 
-
+//Fitness as mean of absolute difference of Balance to 1 and ratioCut
 	public float fitness(PartitionedGraph pg, int alpha, int beta) {
-		float fit = 0;
-		float worstBalance;
-		float worstRatio;
-		
-		if(ratioCut(pg) < beta && balance(pg) < alpha) {
-			fit = 1;
-		}
-		
-		else {
-			if(ratioCut(pg) >= beta) {
-				fit = fit - (float)0.5;
-			}
-			else {
-				fit = fit + (float)0.5;
-			}
-			
-			if(balance(pg) >= alpha)
-				fit = fit - (float)0.5;
-			else {
-				fit = fit + (float)0.5;
-			}
-		}
-		
-		return 0;
+		float absBalance = (float) Math.abs(1-pg.balance(pg));
+		float absRatio = Math.abs(pg.ratioCut(pg));
+		return (absBalance+absRatio)/2;
 	}
 
 
