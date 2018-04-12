@@ -10,6 +10,19 @@ public class PartitionedGraph extends Graphe {
 		super(g);
 	}
 	
+	
+	public ArrayList<Coupure> getCoupures() {
+		return coupures;
+	}
+
+	public void setCoupures(ArrayList<Coupure> coupures) {
+		this.coupures = coupures;
+	}
+
+	public void setSousGraphes(ArrayList<ArrayList<Integer>> sousGraphes) {
+		this.sousGraphes = sousGraphes;
+	}
+
 	/**
 	 * Construit un graphe suivants la liste de partitions partitions
 	 * @param g le graphe d'origine
