@@ -294,7 +294,7 @@ public class Graphe {
 		return res;
 	}
 	
-	public void n(PartitionedGraph p) {
+	public void voisins(PartitionedGraph p) {
 		ArrayList<ArrayList<Integer>> partitions = p.getSousGraphes();
 		ArrayList<ArrayList<ArrayList<Integer>>> res = new ArrayList<>();
 		for (int i = 0; i < partitions.size(); i++) { // pour chaque partition
@@ -452,6 +452,9 @@ public class Graphe {
 	}
 	
 	
+	
+	
+
 	
 	
 }
