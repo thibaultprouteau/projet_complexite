@@ -46,8 +46,8 @@ public class Graphe {
 	}
 	
 	/**
-	 * genere un graphe possèdent nb_noeud noeuds de poid 1 et 0 arcs
-	 * @param nb_noeud le nombre de noeud du graphe a générer
+	 * genere un graphe possï¿½dent nb_noeud noeuds de poid 1 et 0 arcs
+	 * @param nb_noeud le nombre de noeud du graphe a gï¿½nï¿½rer
 	 */
 	public Graphe(int nb_noeud) {
 		matriceAdj = new int[nb_noeud][nb_noeud];
@@ -127,7 +127,7 @@ public class Graphe {
 	}
 
 	/**
-	 * Genère aléatoirement un graphe connexe avec nb_node noeuds et (nb_node-1) arcs de poid [1 ; poid_max]
+	 * Genï¿½re alï¿½atoirement un graphe connexe avec nb_node noeuds et (nb_node-1) arcs de poid [1 ; poid_max]
 	 * @param nb_noeud le nombre de noeud
 	 * @param poid_max la valeure maximum qu'un poid peut prendre
 	 * @return si nb_noeud > 0  && poid_max > 0: retourne le graphe </br> sinon : retourne null
@@ -147,11 +147,11 @@ public class Graphe {
 	}
 	
 	/**
-	 * Genère aléatoirement un graphe connexe avec nb_noeud et [ nb_noeud-1 ; ( nb_noeud * ( nb_noeud - 1 ) )/ 2 ] arcs 
+	 * Genï¿½re alï¿½atoirement un graphe connexe avec nb_noeud et [ nb_noeud-1 ; ( nb_noeud * ( nb_noeud - 1 ) )/ 2 ] arcs 
 	 * de poid [1 ; poid_max]
 	 * @param nb_noeud le nombre de noeud
 	 * @param poid_max la valeure maximum qu'un poid peut prendre
-	 * @return si nb_noeud > 0 && poid_max > à : retourne le graphe </br> sinon : retourne null
+	 * @return si nb_noeud > 0 && poid_max > ï¿½ : retourne le graphe </br> sinon : retourne null
 	 */
 	public static Graphe generateGraph(int nb_noeud, int poid_max) {
 		Graphe res = generateSimpleGraph(nb_noeud, poid_max);
@@ -218,7 +218,7 @@ public class Graphe {
 	
 	/**
 	 * O(2^n) <-- pas top top
-	 * Trouve toutes les coupes du graphes donnant une ou deux partitions (une partition = graphe de départ)
+	 * Trouve toutes les coupes du graphes donnant une ou deux partitions (une partition = graphe de dï¿½part)
 	 * @return une les de PartitionnedGraph
 	 */
 	/*
@@ -383,7 +383,8 @@ public class Graphe {
 		PartitionedGraph p = g.randomPartition();
 		PartitionedGraph q = PartitionedGraph.PartitionnedGraphFromPartitions(g,new ArrayList<>());
 		System.out.println(p);
-		g.n(p);
+		System.out.println("Balance de p = " + g.balance(p));
+		//g.n(p);
 	}
 	
 	@Override
@@ -418,7 +419,53 @@ public class Graphe {
 		
 	}
 	
+<<<<<<< HEAD
+	public int valueArc(int n1, int n2) {
+		int value = 0;
+
+
+		if(n1 > n2){
+			if (matriceAdj[n1][n2] > 0 )
+				value = matriceAdj[n1][n2];
+			
+		}
+		else{
+			if(matriceAdj[n2][n1] > 0)
+				value = matriceAdj[n2][n1];
+		}
+		return value;
+	}
+	
+	public float ratioCut(PartitionedGraph p1){
+		
+		float ratio = 0;
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		ArrayList<Integer> noeudsPapa =  new ArrayList<Integer>();
+		int value = 0;
+		
+		for(int k = 0; k < this.Noeuds.size(); k++){
+			noeudsPapa.add(this.Noeuds.get(k).getId());
+		}
+		
+		for (int i = 1; i < p1.getSousGraphes().size() + 1; i++) {
+			temp = neighboorsOf(p1.getSousGraphes().get(i));
+			
+			for(int j = 0; j < noeudsPapa.size(); j++){
+				for(int h = 0; h < temp.size(); h++){ 
+				value = value + valueArc(noeudsPapa.get(j), temp.get(h));
+				}
+				
+			}
+			ratio = ratio + (value / getPoids(temp));
+		}
+
+		return ratio;
+	}
+	
 	public static int sumPoids(Graphe g) {
+=======
+	public static int sumPoidsGraphe(Graphe g) {
+>>>>>>> 34dd97bad8efcd6d121b7a5f9ff8edcba17086fe
 		int weight = 0;
 		
 		for(int i = 0; i < g.getNoeuds().size(); i++) {
@@ -428,22 +475,32 @@ public class Graphe {
 		return weight;
 	}
 	
-	public static int balance(PartitionedGraph pg) {
+	public int sumPoidsSousGraphe(PartitionedGraph pg, int i) {
+		int weight = 0;
+		
+		for(int j = 0; j < pg.getSousGraphes().get(i).size(); j++) {
+			weight = weight + Noeuds.get(pg.getSousGraphes().get(i).get(j)).getPoids();
+		}
+		
+		return weight;
+	}
+	
+	public int balance(PartitionedGraph pg) {
 		int bal = 0;
 		int max = 0;
 		int pdbig = 0;
 		int nb = 0;
 		for(int i = 0; i < pg.getSousGraphes().size(); i++) {
-			int pdi = sumPoids(pg.getSousGraphes().get(i)); //poids du sous graphe i
-			
+			int pdi = sumPoidsSousGraphe(pg,i); //poids du sous graphe i
+			System.out.println("pd i : "+pdi);
 			if(pdi > max) {
 				max = pdi;
 			}
 			
 			pdbig = pdbig + pdi;
-			nb = nb + pg.getSousGraphes().get(i).nombreSommets();
+			nb = nb + pg.getSousGraphes().get(i).size();
 		}
-		
+		System.out.println("pd big : "+pdbig);
 		int denom = pdbig/nb;
 		
 		bal = max/denom;
