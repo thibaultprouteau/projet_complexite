@@ -313,8 +313,9 @@ public class Graphe {
 								c.add((Integer) n);
 							}
 
-							if (canBeAPart(c))
-								b.add(c);
+							if (canBeAPart(c)) {
+								if (c.size() != 0) b.add(c);								
+							}
 							else {
 								// System.out.println("~"+c);
 								boo = false;
@@ -369,7 +370,7 @@ public class Graphe {
 
 	public boolean canBeAPart(ArrayList<Integer> part) {
 		if (part.size() == 0)
-			return false;
+			return true;
 		int n = 0;
 		ArrayList<Integer> connected = new ArrayList<>();
 		connected.add(part.get(0));
@@ -423,9 +424,17 @@ public class Graphe {
 		h.matriceAdj[3][2] = 1;
 		h.matriceAdj[4][2] = 1;
 		h.matriceAdj[4][3] = 1;
-		PartitionedGraph p = g.randomPartition();
+		PartitionedGraph p;// = g.randomPartition();
 
 		PartitionedGraph q = g.randomPartition();
+		ArrayList<ArrayList<Integer>> a = new ArrayList<>();
+		for (int i = 0; i < 6; i++) {
+			ArrayList<Integer> buff = new ArrayList<>();
+			buff.add(i);
+			a.add(buff);
+		}
+		p = PartitionedGraph.PartitionnedGraphFromPartitions(g, a);
+		System.out.println(g.voisins(p));
 		//PartitionedGraph q = PartitionedGraph.PartitionnedGraphFromPartitions(g,new ArrayList<>());
 		//System.out.println(p);
 		//System.out.println("Balance de p = " + g.balance(p));
@@ -438,6 +447,9 @@ public class Graphe {
 
 		// -------------------------------------------------------------------------------------------------------------------
 
+		
+	}
+	public static void f() {
 		ArrayList<Graphe> listeGraphes = new ArrayList<>();
 		ArrayList<PartitionedGraph> listePartitionGraphes = new ArrayList<>();
 
