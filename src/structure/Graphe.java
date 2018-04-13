@@ -438,17 +438,22 @@ public class Graphe {
 
 		chrono.start();
 
+		int nb = 0;
+		
 		for (int i = 10; i <= 50; i += 5) {
-			for (int j = 0; j < 9; j++) {
+			for (int j = 0; j < 10; j++) {
 				Graphe graphe = generateGraph(i, 5);
 
 				listeGraphes.add(graphe);
 				listePartitionGraphes.add(graphe.randomPartition());
-
+				nb++;
 			}
 
 		}
 		chrono.stop();
+		System.out.println(chrono.getDureeNs());
+		
+		System.out.println(nb);
 		// System.out.println(chrono.getDureeNs());
 
 		ArrayList<Long> listeChrono = new ArrayList<>();
@@ -463,14 +468,14 @@ public class Graphe {
 
 		Long res;
 		int count = 5;
-		Long temp1 = listeChrono.get(0);
-		for (int i = 1; i < listeChrono.size(); i++) {
+		Long temp1 =(long) 0;
+		for (int i = 0; i < listeChrono.size(); i++) {
 			System.out.println(listeChrono.get(i));
 			temp1 = temp1 + listeChrono.get(i);
-			if (i % 10 == 0) {
+			if ((i+1) % 10 == 0) {
 				res = temp1 / 10;
 				count = count + 5;
-				System.out.println("Temps moyen pour un graphe de " + count + ": " + res);
+				System.out.println("Temps moyen pour un graphe de " + count + ": " + res + " ns");
 				temp1 = (long) 0;
 			}
 
@@ -537,7 +542,7 @@ public class Graphe {
 			noeudsPapa.add(this.Noeuds.get(k).getId());
 		}
 
-		for (int i = 1; i < p1.getSousGraphes().size() + 1; i++) {
+		for (int i = 0; i < p1.getSousGraphes().size(); i++) {
 			temp = neighboorsOf(p1.getSousGraphes().get(i));
 
 			for (int j = 0; j < noeudsPapa.size(); j++) {
