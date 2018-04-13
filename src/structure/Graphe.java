@@ -719,7 +719,7 @@ public class Graphe {
         int iterationNb = 0;
         int maxIter = 100;
 
-        ArrayList<PartitionedGraph> init = initPop(20);
+        ArrayList<PartitionedGraph> init = initPop(40);
 
         ArrayList<PartitionedGraph> bestPop;
         ArrayList<PartitionedGraph> newGen;
@@ -785,13 +785,13 @@ public class Graphe {
 
         ArrayList<PartitionedGraph> bestIndivs = new ArrayList();
         ArrayList<PartitionedGraph> tmp = new ArrayList<>(pop);
+        System.out.println(pop.size());
         
         
-        int k = 0;
         for (int j = 0; j < pop.size() / 2; j++) {
-                
+        	int k = 0;        
                 int i = 0;
-                while(i< tmp.size()){
+                while(i < tmp.size()){
                         //fitns.add(g.fitness(pop.get(i), alpha, beta));
                         if (fitness(tmp.get(i), alpha, beta) < fitness(tmp.get(k), alpha, beta)) { //if fitness smaller than
                                 k = i;
