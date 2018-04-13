@@ -631,7 +631,7 @@ public class Graphe {
 		ArrayList<Double> doubleList = new ArrayList<>();
 
 		PartitionedGraph tempGraph = pt;
-		Double scoreABattre = Math.random();
+		Double scoreABattre = fitness(pt, 2, 2);
 
 		int n = 0;
 
@@ -642,7 +642,7 @@ public class Graphe {
 																	// diff�rence
 
 			for (PartitionedGraph p : partionList) {
-				doubleList.add(Math.random()); // ajoute le score de la partition � la liste des scores
+				doubleList.add(fitness(p, 2, 2)); // ajoute le score de la partition � la liste des scores
 			}
 
 			double temp = doubleList.get(0);
