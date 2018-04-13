@@ -3,11 +3,12 @@ package structure;
 import java.lang.reflect.Array;
 import java.util.AbstractMap.SimpleEntry;
 
-import graph.PartitionedGraph;
+//import graph.PartitionedGraph;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Graphe {
 
@@ -424,7 +425,10 @@ public class Graphe {
 		h.matriceAdj[3][2] = 1;
 		h.matriceAdj[4][2] = 1;
 		h.matriceAdj[4][3] = 1;
-		PartitionedGraph p;// = g.randomPartition();
+		Graphe f = generateGraph(50, 10);
+		f.geneticAlgo(1, 0);
+		
+		/*PartitionedGraph p;// = g.randomPartition();
 
 		PartitionedGraph q = g.randomPartition();
 		ArrayList<ArrayList<Integer>> a = new ArrayList<>();
@@ -444,6 +448,8 @@ public class Graphe {
 		System.out.println(p);
 		System.out.println("Balance de p = " + g.balance(p));
 		// g.n(p);
+		
+		f();*/
 
 		// -------------------------------------------------------------------------------------------------------------------
 
@@ -459,8 +465,8 @@ public class Graphe {
 
 		int nb = 0;
 		
-		for (int i = 10; i <= 50; i += 5) {
-			for (int j = 0; j < 10; j++) {
+		for (int i = 10; i <= 10; i += 5) {
+			for (int j = 0; j < 1; j++) {
 				Graphe graphe = generateGraph(i, 5);
 
 				listeGraphes.add(graphe);
@@ -605,7 +611,7 @@ public class Graphe {
 		double balance = pg.balance(pg);
 		double ratioCut = pg.ratioCut(pg);
 		if (balance < alpha && ratioCut < beta) {
-			return 1;
+			return 0;
 		} else {
 			double absBalance = Math.abs(alpha - balance);
 			double absRatio = Math.abs(beta - ratioCut);
@@ -663,11 +669,11 @@ public class Graphe {
 		ArrayList<Double> doubleList = new ArrayList<>();
 
 		PartitionedGraph tempGraph = pt;
-		Double scoreABattre = fitness(pt, 2, 2);
+		//Double scoreABattre = fitness(pt, 2, 2);
 
 		int n = 0;
 
-		while (n < 10) {
+		while (fitness(pt, 2, 2) != 0 || n < 10) {
 			// System.out.println(pt);
 
 			ArrayList<PartitionedGraph> partionList = voisins(pt); // recupere l'ensemble des partitions a 1 de
@@ -689,16 +695,157 @@ public class Graphe {
 				}
 			}
 
-			if (temp < scoreABattre) {
-				pt = tempGraph; // change la partition de graphe par la meilleure trouv�
+			/*if (temp < scoreABattre) {
+				 // change la partition de graphe par la meilleure trouv�
 				scoreABattre = temp; // change la valeur du meilleur score !
-			}
+			}*/
+			pt = tempGraph;
 			doubleList.clear();
 			n++;
+			
 
+		}
+		
+		if(fitness(pt, 2, 2) == 0){
+			System.out.println("YOUPIIII");
 		}
 
 		return pt;
 	}
 
+	public PartitionedGraph geneticAlgo(int alpha, int beta) {
+        //PartitionedGraph p = new PartitionedGraph();
+        
+        int iterationNb = 0;
+        int maxIter = 100;
+
+        ArrayList<PartitionedGraph> init = initPop(20);
+
+        ArrayList<PartitionedGraph> bestPop;
+        ArrayList<PartitionedGraph> newGen;
+        ArrayList<PartitionedGraph> newPop = new ArrayList();
+        
+        
+        while ( !hasFitest(init, alpha, beta) && iterationNb < maxIter) {
+        	
+                bestPop = evaluatePop(init, alpha, beta); // selects best indiv. of pop
+                newGen = breed(bestPop); //Crossover to create children
+                newPop = newPop(bestPop, newGen); //mix of new and old generation     
+                
+                System.out.println(iterationNb++ +" "+ newPop.size());
+        }
+        
+        PartitionedGraph bestest = newPop.get(0);
+        
+        
+        for (int i = 0; i < newPop.size(); i++) {
+                    //fitns.add(g.fitness(pop.get(i), alpha, beta));
+        	if (fitness(newPop.get(i), alpha, beta) < fitness(bestest, alpha, beta)) { //if fitness smaller than
+        		bestest = newPop.get(i);
+           }
+            
+        }
+        
+        System.out.println("The best solution is : " + bestest);
+        System.out.println("Its fitness value is : " + fitness(bestest, alpha,beta));
+        return bestest;
+	}
+	
+	public boolean hasFitest(ArrayList<PartitionedGraph> pop,int alpha, int beta){
+		ArrayList<Double> fitnesses = new ArrayList();
+		
+		for(int i = 0; i < pop.size(); i++){
+			fitnesses.add(fitness(pop.get(i),alpha,beta));
+		}
+		
+		if(fitnesses.contains(0)){
+			return true;
+		}
+		
+		return false;
+	}
+
+// initialize population of n individuals from graph g
+	public ArrayList<PartitionedGraph> initPop(int n) {
+        ArrayList<PartitionedGraph> pop = new ArrayList();
+        PartitionedGraph pg;
+
+        for (int i = 0; i < n; i++) {
+
+                pg = randomPartition();
+                pop.add(pg);
+                System.out.println(pg);
+
+        }
+        return pop;
+	}
+
+// returns best individuals apt for reprod (half of population)
+	public ArrayList<PartitionedGraph> evaluatePop(ArrayList<PartitionedGraph> pop, int alpha, int beta) {
+
+        ArrayList<PartitionedGraph> bestIndivs = new ArrayList();
+        ArrayList<PartitionedGraph> tmp = new ArrayList<>(pop);
+        
+        
+        int k = 0;
+        for (int j = 0; j < pop.size() / 2; j++) {
+                
+                int i = 0;
+                while(i< tmp.size()){
+                        //fitns.add(g.fitness(pop.get(i), alpha, beta));
+                        if (fitness(tmp.get(i), alpha, beta) < fitness(tmp.get(k), alpha, beta)) { //if fitness smaller than
+                                k = i;
+                        }
+                        i++;        
+                }
+                if(tmp.size() != 0)
+                	bestIndivs.add(tmp.remove(k));
+        }
+        
+     /*   for(int i = 0; i < bestIndivs.size(); i ++) {
+                tmp.get(i);
+        }
+*/
+        return bestIndivs;
+	}
+
+//new generation of children --> crossover and mutation
+	public ArrayList<PartitionedGraph> breed(ArrayList<PartitionedGraph> pop) {
+        
+        ArrayList<PartitionedGraph> tmp = new ArrayList<>(pop);
+        PartitionedGraph papa;
+        PartitionedGraph mama;
+        
+        ArrayList<PartitionedGraph> children = new ArrayList();
+        
+        
+        while(!tmp.isEmpty()) {        
+                Random rn = new Random();
+                papa = tmp.remove(rn.nextInt(tmp.size()));
+                if(!tmp.isEmpty()) {        
+                        Random rm = new Random();
+                        mama = tmp.remove(rm.nextInt(tmp.size()));
+                        
+                        
+                        PartitionedGraph p1 = quand_un_papa_et_une_maman_s_aime_beaucoup_le_papa_met_un_petit_milliard_de_graine_dans_la_maman_et_neuf_mois_plustard_un_bebe(papa,mama);
+                        PartitionedGraph p2= quand_un_papa_et_une_maman_s_aime_beaucoup_le_papa_met_un_petit_milliard_de_graine_dans_la_maman_et_neuf_mois_plustard_un_bebe(papa,mama);
+                        children.add(p1);
+                        children.add(p2);
+                }
+        }
+        
+        return children;
+        
+	}
+
+	public static ArrayList<PartitionedGraph> newPop(ArrayList<PartitionedGraph> oldGen, ArrayList<PartitionedGraph> newGen) {
+        ArrayList<PartitionedGraph> newPop = new ArrayList();
+        
+        newPop.addAll(oldGen);
+        newPop.addAll(newGen);
+        
+        return newPop;
+}
+	
+	
 }
