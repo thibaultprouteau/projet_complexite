@@ -422,10 +422,14 @@ public class Graphe {
 		h.matriceAdj[4][2] = 1;
 		h.matriceAdj[4][3] = 1;
 		PartitionedGraph p = g.randomPartition();
-		PartitionedGraph q = PartitionedGraph.PartitionnedGraphFromPartitions(g,new ArrayList<>());
-		System.out.println(p);
-		System.out.println("Balance de p = " + g.balance(p));
+		PartitionedGraph q = g.randomPartition();
+		//PartitionedGraph q = PartitionedGraph.PartitionnedGraphFromPartitions(g,new ArrayList<>());
+		//System.out.println(p);
+		//System.out.println("Balance de p = " + g.balance(p));
 		//g.n(p);
+		System.out.println(p);
+		System.out.println(q);
+		System.out.println(g.quand_un_papa_et_une_maman_s_aime_beaucoup_le_papa_met_un_petit_milliard_de_graine_dans_la_maman_et_neuf_mois_plustard_un_bebe(p, q));
 	}
 	
 	@Override
@@ -504,20 +508,22 @@ public class Graphe {
 	}
 	
 
-	public static PartitionedGraph bebe(PartitionedGraph maman, PartitionedGraph papa){
+	public PartitionedGraph quand_un_papa_et_une_maman_s_aime_beaucoup_le_papa_met_un_petit_milliard_de_graine_dans_la_maman_et_neuf_mois_plustard_un_bebe(PartitionedGraph maman, PartitionedGraph papa){
 		
 		int [][] matriceBebe = new int [maman.matriceAdj.length][maman.matriceAdj.length];
 		double prob = 0;
 		
 		for(int i = 0; i < maman.matriceAdj.length; i++){
 			for(int j = 0; j < i; j++){
-				prob = ((((maman.matriceAdj[i][j] == -1)? 0:1) + ((papa.matriceAdj[i][j] == -1)? 0:1))) / 2;
-				matriceBebe[i][j] = (prob < Math.random()? maman.matriceAdj[i][j]:-1 );
+				prob = ((((maman.matriceAdj[i][j] == -1)? 0:1) + ((papa.matriceAdj[i][j] == -1)? 0:1))) / 2.0;
+				int temp = (prob > Math.random()? maman.matriceAdj[i][j]:-1 );
+				matriceBebe[i][j] = temp;
+				matriceBebe[j][i] = temp;
 			}
 		}
 		
 		
-		return bebe;
+		return new PartitionedGraph(matriceBebe, this);
 		
 	}
 

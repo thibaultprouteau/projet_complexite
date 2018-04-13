@@ -10,6 +10,19 @@ public class PartitionedGraph extends Graphe {
 		super(g);
 	}
 	
+	public PartitionedGraph(int[][] matrix, Graphe g) {
+		super();
+		Noeuds = g.Noeuds; 
+		matriceAdj = new int[Noeuds.size()][Noeuds.size()];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < i; j++) {
+				matriceAdj[i][j] = matrix[i][j];
+				matriceAdj[j][i] = matrix[i][j];
+				if (matriceAdj[i][j] == -1 && g.matriceAdj[i][j] != -1)coupures.add(new Coupure(i, j));
+			}
+		}
+		findPartitions();
+	}
 	
 	public ArrayList<Coupure> getCoupures() {
 		return coupures;
