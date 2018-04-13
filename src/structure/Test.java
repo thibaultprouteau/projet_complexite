@@ -2,6 +2,7 @@ package structure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,65 +30,112 @@ public class Test {
 		h.matriceAdj[3][2] = 1;
 		h.matriceAdj[4][2] = 1;
 		h.matriceAdj[4][3] = 1;
-		
-		initPop(h, 20);
+
+		//h.evaluatePop(initPop(h, 20), 100, 100);
 	}
-	
-	
+
 	public static void geneticAlgo() {
 		Graphe h = new Graphe();
-		PartitionedGraph p;
+		PartitionedGraph p = new PartitionedGraph();
 		int alpha;
 		int beta;
 		
-		initPop(h, 20);
+		int iterationNb = 0;
+		int maxIter = 10;
+
+		ArrayList<PartitionedGraph> init = initPop(h, 20);
+
 		
-		//evaluatePop();
 		boolean stopCondition = true;
-		while(!stopCondition) {
-			//selectBestIndiv();
-			breed();
-			//for all the children produced
-				//fitness(p,alpha,beta);
-			replacePop();
+		while ( h.fitness(p,2,2) != 0 || iterationNb < maxIter) {
+			ArrayList<PartitionedGraph> bestPop = evaluatePop(h, init, 2, 2); // selects best indiv. of pop
+			ArrayList<PartitionedGraph> newGen = breed(bestPop); //Crossover to create children
+			newPop(bestPop, newGen); //mix of new and old generation	
 		}
 	}
-	
-	//initialize population of n individuals from graph g
-	public static ArrayList initPop(Graphe g, int n) {
+
+	// initialize population of n individuals from graph g
+	public static ArrayList<PartitionedGraph> initPop(Graphe g, int n) {
 		ArrayList<PartitionedGraph> pop = new ArrayList();
 		PartitionedGraph pg;
-		
-		for(int i = 0; i < n; i++) {
-			
+
+		for (int i = 0; i < n; i++) {
+
 			pg = g.randomPartition();
 			pop.add(pg);
 			System.out.println(pg);
-			
+
 		}
 		return pop;
 	}
-	
-	
-	
-	
-	
-	public static void breed() {
-		crossover();
-		mutate();
+
+	// returns best individuals apt for reprod (half of population)
+	public static ArrayList<PartitionedGraph> evaluatePop(Graphe g, ArrayList<PartitionedGraph> pop, int alpha, int beta) {
+
+		ArrayList<PartitionedGraph> bestIndivs = new ArrayList();
+
+		int k = 0;
+		for (int j = 0; j < pop.size() / 2; j++) {
+			
+			for (int i = 0; i < pop.size(); i++) {
+				//fitns.add(g.fitness(pop.get(i), alpha, beta));
+				if (g.fitness(pop.get(i), alpha, beta) < g.fitness(pop.get(k), alpha, beta)) { //if fitness smaller than
+					k = i;
+				}
+				
+			}
+			bestIndivs.add(pop.get(k));
+		}
+		
+		for(int i = 0; i < bestIndivs.size(); i ++) {
+			System.out.println(pop.get(i));
+		}
+
+		return bestIndivs;
 	}
-	
-	public static void crossover() {
+
+	//new generation of children --> crossover and mutation 
+	public static ArrayList<PartitionedGraph> breed(ArrayList<PartitionedGraph> pop) {
+		
+		ArrayList<PartitionedGraph> tmp = pop;
+		PartitionedGraph papa;
+		PartitionedGraph mama;
+		
+		ArrayList<PartitionedGraph> children = new ArrayList();
+		
+		
+		if(!tmp.isEmpty()) {	
+			Random rn = new Random();
+			papa = tmp.remove(rn.nextInt(tmp.size()));
+			if(!tmp.isEmpty()) {	
+				Random rm = new Random();
+				mama = tmp.remove(rm.nextInt(tmp.size()));
+				
+				children.add(crossover(papa,mama));
+			}
+		}
+		
+		return mutate(children);
 		
 	}
-	
-	public static void mutate() {
-		
+
+	public static PartitionedGraph crossover(PartitionedGraph pa, PartitionedGraph ma) {
+
+		return null;
 	}
-	
-	
-	public static void replacePop() {
+
+	public static ArrayList<PartitionedGraph> mutate(ArrayList<PartitionedGraph> children) {
+
+		return null;
+	}
+
+	public static ArrayList<PartitionedGraph> newPop(ArrayList<PartitionedGraph> oldGen, ArrayList<PartitionedGraph> newGen) {
+		ArrayList<PartitionedGraph> newPop = new ArrayList();
 		
+		newPop.addAll(oldGen);
+		newPop.addAll(newGen);
+		
+		return newPop;
 	}
 
 }
